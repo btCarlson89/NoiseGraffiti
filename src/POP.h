@@ -30,6 +30,9 @@ public:
     
     void draw();
     
+    //  Resets
+    //////////
+    
     void resetOffset();
     
     void resetPositions();

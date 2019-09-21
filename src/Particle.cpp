@@ -50,10 +50,6 @@ void Particle::update(){
     if (pos.y > height + 10){
         pos.y = -10;
     }
-//    else if (ofRandom(100000) > 99999 ){
-//        pos.x = ofRandom(width);
-//        pos.y = ofRandom(height);
-//    }
 }
 
 void Particle::draw(){
