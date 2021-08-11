@@ -2,10 +2,10 @@
 #include "ofApp.h"
 
 //========================================================================
-int main( ){
+int main(){
     ofGLWindowSettings settings;
     settings.setGLVersion(4,1);
-    settings.setSize(1920, 1080);
+    settings.setSize(900, 900);
     ofCreateWindow(settings);
     ofRunApp(new ofApp());
 }

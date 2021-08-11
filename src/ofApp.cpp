@@ -6,7 +6,8 @@
 void ofApp::setup(){
 
     //  OF Settings
-    ofSetFullscreen(true);
+    ofSetWindowShape(1080, 1080);
+    //ofSetFullscreen(true);
     ofSetBackgroundAuto(false);
     ofSetCircleResolution(360);
     ofSetFrameRate(60);
@@ -16,44 +17,45 @@ void ofApp::setup(){
     oscIn.setup(10000);
     oscOut.setup("127.0.0.1", 9999);
     oscOut2.setup("127.0.0.1", 9998);
-    mesOut.setAddress("param1");
+    mesOut.setAddress("/param1");
     
     //  Window
     width = ofGetWidth();
     height = ofGetHeight();
     
     //  FBOs
-    fboPOP.allocate(width, height, GL_RGB);
+    fboPOP.allocate(width, height, GL_RGBA16F_ARB);
     fboPOP.begin();
     ofClear(0);
     fboPOP.end();
     
     //  Create Color Pools
-    intColors.addColor(ofColor(  0,   0,   0,  8));
-    intColors.addColor(ofColor(127, 127, 127,  8));
-    intColors.addColor(ofColor(255, 255, 255,  8));
-    intColors.addColor(ofColor(255, 255, 255,  8));
-    intColors.addColor(ofColor(255, 255, 255,  8));
+    intColors.addColor(ofColor(  0,   0,   0,  255));
+    intColors.addColor(ofColor(127, 127, 127,  255));
+    intColors.addColor(ofColor(255, 255, 255,  255));
+    intColors.addColor(ofColor(255, 255, 255,  255));
+    intColors.addColor(ofColor(255, 255, 255,  255));
     
-    intColors.addColor(ofColor( 78,  89, 140,  8));
-    intColors.addColor(ofColor(252, 175,  88,  8));
-    intColors.addColor(ofColor(255, 140,  66,  8));
+//    intColors.addColor(ofColor(255,  32,   64,  255));
+//    intColors.addColor(ofColor(255,  32,   64,  255));
+//    intColors.addColor(ofColor(255,  32,   64,  255));
     
-    intColors.addColor(ofColor(  0,   0,   0,  8));
-    intColors.addColor(ofColor(127, 127, 127,  8));
-    intColors.addColor(ofColor(255, 255, 255,  8));
-    intColors.addColor(ofColor(255, 255, 255,  8));
-    intColors.addColor(ofColor(255, 255, 255,  8));
+    intColors.addColor(ofColor(  0,   0,   0,  255));
+    intColors.addColor(ofColor(127, 127, 127,  255));
+    intColors.addColor(ofColor(255, 255, 255,  255));
+    intColors.addColor(ofColor(255, 255, 255,  255));
+    intColors.addColor(ofColor(255, 255, 255,  255));
     
-    extColors.addColor(ofColor(  0,   0,   0,  8));
-    extColors.addColor(ofColor(255, 255, 255,  8));
-    extColors.addColor(ofColor(  0,   0,   0,  8));
-    extColors.addColor(ofColor(  0,   0,   0,  8));
-    extColors.addColor(ofColor(255, 255, 255,  8));
-    extColors.addColor(ofColor(  0,   0,   0,  8));
-    extColors.addColor(ofColor( 78,  89, 140,  8));
-    extColors.addColor(ofColor(252, 175,  88,  8));
-    extColors.addColor(ofColor(255, 140,  66,  8));
+    extColors.addColor(ofColor(  0,   0,   0,  255));
+    extColors.addColor(ofColor(255, 255, 255,  255));
+    extColors.addColor(ofColor(  0,   0,   0,  255));
+    extColors.addColor(ofColor(  0,   0,   0,  255));
+    extColors.addColor(ofColor(255, 255, 255,  255));
+    extColors.addColor(ofColor(  0,   0,   0,  255));
+    
+//    extColors.addColor(ofColor(255,  32,   64,  255));
+//    extColors.addColor(ofColor(255,  32,   64,  255));
+//    extColors.addColor(ofColor(255,  32,   64,  255));
     
     //  Init POP Nets
     pop = new POP(4096, width, height);
@@ -61,7 +63,7 @@ void ofApp::setup(){
     pop->setExteriorColors(extColors);
     
     gpop = new GPOP();
-    gpop->setup(400000, width, height);
+    gpop->setup(0.25 * width * height, width, height);
     initPOPPositions();
     initPOPVelocities();
     initPOPColors();
@@ -86,6 +88,7 @@ void ofApp::setup(){
     glitch2.load("shaders/glitch-02");
     glitch3.load("shaders/glitch-03");
     glitch4.load("shaders/glitch-04");
+    glitchLines.load("shaders/glitch-lines");
     
     glitch1Fbo.allocate(width, height, GL_RGBA16F_ARB);
     glitch1Fbo.begin();
@@ -107,6 +110,11 @@ void ofApp::setup(){
     ofClear(0, 0, 0, 0);
     glitch4Fbo.end();
     
+    glitchLinesFbo.allocate(width, height, GL_RGBA16F_ARB);
+    glitchLinesFbo.begin();
+    ofClear(0, 0, 0, 0);
+    glitchLinesFbo.end();
+    
     hatGlitchFbo.allocate(width, height, GL_RGBA16F_ARB);
     hatGlitchFbo.begin();
     ofClear(0, 0, 0, 0);
@@ -114,17 +122,24 @@ void ofApp::setup(){
     
     plane.set(width, height, 100, 100);
     plane.mapTexCoords(0, 0, width, height);
+    
+    //  Test assets
+    img.load("images/touch-2.png");
+    video.load("climaxDanceOverhead01.mp4");
+    video.play();
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     
     //  Post Fx Params
-    glitch1Amp *= 0.97;
-    glitch2Amp *= 0.97;
-    glitch3Amp *= 0.97;
+    glitch1Amp *= 0.93;
+    glitch2Amp *= 0.92;
+    glitch3Amp *= 0.92;
     glitch4Amp *= 0.97;
-    hatGlitch *= 0.97;
+    hatGlitch  *= 0.97;
+    
+    lastChange += ofGetLastFrameTime();
     
     //  OSC In
     int note = 0;
@@ -152,10 +167,14 @@ void ofApp::update(){
         }
         else if(note == 38 && vel > 10){    //  D
             glitch1Amp = 1.0f;
-            ofBackground(0);
-            fboPOP.begin();
-            ofClear(0);
-            fboPOP.end();
+            if (lastChange > 0.25){
+                video.setPosition(ofRandom(1));
+                lastChange = 0;
+            }
+            //ofBackground(0);
+            //fboPOP.begin();
+            //ofClear(0);
+            //fboPOP.end();
         }
         else if(note == 41 && vel > 10){    //  F
             glitch2Amp = 1.0f;
@@ -173,7 +192,8 @@ void ofApp::update(){
     mesIn.clear();
 
     //  OSC Out
-    mesOut.addFloatArg(dt / 8.0);
+    mesOut.setAddress("/param1");
+    mesOut.addFloatArg(dt / 20.0 + 0.15);
     if(mesOut.getNumArgs() > 0){
         oscOut.sendMessage(mesOut);
         oscOut2.sendMessage(mesOut);
@@ -201,6 +221,7 @@ void ofApp::update(){
     //pop->update();
     gpop->update();
     
+    
     //  Window
     ofSetWindowTitle(ofToString(ofGetFrameRate()));
 }
@@ -211,11 +232,13 @@ void ofApp::draw(){
     //  BG
     ofClear(0);
     
+    video.update();
+    
     //  POP Net
     //pop->draw();
     
     fboPOP.begin();
-    ofSetColor(0, 0, 0, 1);
+    ofSetColor(0, 0, 0, 2);
     ofDrawRectangle(0, 0, width, height);
     gpop->draw();
     fboPOP.end();
@@ -226,9 +249,13 @@ void ofApp::draw(){
     hatGlitchFbo.begin();
     ofSetColor(255, 255, 255);
     fboPOP.draw(0, 0);
+    //img.draw(0, 0);
+    //video.draw(0, 0);
     ofSetColor(255, 255, 255, 255 * hatGlitch);
     ofDrawRectangle(hatPosX, 0, hatW, height);
     hatGlitchFbo.end();
+    
+    //hatGlitchFbo.draw(0, 0);
     
     //  Glitch
     glitch1Fbo.begin();
@@ -286,8 +313,24 @@ void ofApp::draw(){
     glitch4.end();
     glitch4Fbo.end();
     
+    //  Glitch Lines
+    glitchLinesFbo.begin();
+    glitchLines.begin();
+    glitchLines.setUniform2f("res", width, height);
+    glitchLines.setUniform1f("time", ofGetElapsedTimef());
+    glitchLines.setUniform1f("low", glitch1Amp);
+    glitchLines.setUniform1f("divs", ofRandom(32));
+    glitchLines.setUniformTexture("tex", glitch4Fbo.getTexture(), 0);
+    ofPushMatrix();
+    ofTranslate(width/2, height/2);
+    plane.draw();
+    ofPopMatrix();
+    glitchLines.end();
+    glitchLinesFbo.end();
+    
     //glitch1Fbo.draw(0, 0);
-    glitch4Fbo.draw(0, 0);
+    //glitch4Fbo.draw(0, 0);
+    glitchLinesFbo.draw(0, 0);
     
     
     //  GUI

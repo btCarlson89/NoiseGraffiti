@@ -118,15 +118,15 @@ void GPOP::update()
 ////////////////////////////////////////////////////////////////
 void GPOP::draw()
 {
-    glPointSize(24);
-    ofEnableBlendMode(OF_BLENDMODE_ALPHA);
+    glPointSize(3);
+    //ofEnableBlendMode(OF_BLENDMODE_ALPHA);
     drawShader.begin();
     drawShader.setUniformTexture("inPos", pp.src->getTexture(POSITION), POSITION);
     drawShader.setUniformTexture("inVel", pp.src->getTexture(VELOCITY), VELOCITY);
     drawShader.setUniformTexture("inCol", pp.src->getTexture(COLOR), COLOR);
     mesh.draw();
     drawShader.end();
-    ofEnableBlendMode(OF_BLENDMODE_DISABLED);
+    //ofEnableBlendMode(OF_BLENDMODE_DISABLED);
     
     //bgFbo.draw(0, 0);
 }

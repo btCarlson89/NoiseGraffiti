@@ -8,7 +8,7 @@
 #include "GPOP.h"
 #include "POP.h"
 
-class ofApp : public ofBaseApp{
+class ofApp : public ofBaseApp {
 
 public:
     
@@ -119,5 +119,14 @@ private:
     int hatPosY;
     int hatW;
     
+    ofShader glitchLines;
+    ofFbo glitchLinesFbo;
+    
     ofPlanePrimitive plane;
+    
+    //  Test assets
+    ofImage img;
+    ofVideoPlayer video;
+    
+    float lastChange = 0;
 };
